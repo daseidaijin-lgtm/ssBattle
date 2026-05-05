@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>学歴マウントバトル</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>学歴マウントバトル</h1>
+
+  <p id="turnText">ターン：1 / 5</p>
+
+  <div class="score">
+    <p>あなたの勝利数：<span id="playerScore">0</span></p>
+    <p>CPUの勝利数：<span id="cpuScore">0</span></p>
+  </div>
+
+  <div class="battle-area">
+    <div class="card">
+      <h2>あなたのカード</h2>
+      <p id="playerUniversity">？？？</p>
+      <p id="playerRank">ランク：-</p>
+      <p id="playerDeviation">偏差値：-</p>
+    </div>
+
+    <div class="card">
+      <h2>CPUのカード</h2>
+      <p id="cpuUniversity">？？？</p>
+      <p id="cpuRank">ランク：-</p>
+      <p id="cpuDeviation">偏差値：-</p>
+    </div>
+  </div>
+
+  <h2 id="resultText">カードを出して勝負！</h2>
+
+  <button id="battleBtn">カードを出す</button>
+  <button id="resetBtn">リセット</button>
+
+  <script src="java.js"></script>
+</body>
+</html>
