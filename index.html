@@ -6,36 +6,44 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>学歴マウントバトル</h1>
 
-  <p id="turnText">ターン：1 / 5</p>
+<h1>学歴マウントバトル</h1>
 
-  <div class="score">
-    <p>あなたの勝利数：<span id="playerScore">0</span></p>
-    <p>CPUの勝利数：<span id="cpuScore">0</span></p>
+<div class="pp-area">
+  <h2>あなたPP：<span id="playerPP">4000</span></h2>
+  <h2>CPU PP：<span id="cpuPP">4000</span></h2>
+</div>
+
+<div class="level-area">
+  <label>CPUタイプ：</label>
+  <select id="cpuLevel">
+    <option value="easy">Fラン</option>
+    <option value="normal">私文</option>
+    <option value="hard">国公立理系</option>
+  </select>
+</div>
+
+<div class="battle">
+  <div class="field-card">
+    <h3>あなたの場</h3>
+    <p id="playerName">？？？</p>
+    <p id="playerPower">-</p>
   </div>
 
-  <div class="battle-area">
-    <div class="card">
-      <h2>あなたのカード</h2>
-      <p id="playerUniversity">？？？</p>
-      <p id="playerRank">ランク：-</p>
-      <p id="playerDeviation">偏差値：-</p>
-    </div>
-
-    <div class="card">
-      <h2>CPUのカード</h2>
-      <p id="cpuUniversity">？？？</p>
-      <p id="cpuRank">ランク：-</p>
-      <p id="cpuDeviation">偏差値：-</p>
-    </div>
+  <div class="field-card">
+    <h3>CPUの場</h3>
+    <p id="cpuName">？？？</p>
+    <p id="cpuPower">-</p>
   </div>
+</div>
 
-  <h2 id="resultText">カードを出して勝負！</h2>
+<h2 id="result">手札からカードを選べ！</h2>
 
-  <button id="battleBtn">カードを出す</button>
-  <button id="resetBtn">リセット</button>
+<h2>あなたの手札</h2>
+<div id="hand"></div>
 
-  <script src="java.js"></script>
+<button id="resetBtn">リセット</button>
+
+<script src="java.js"></script>
 </body>
 </html>
