@@ -1,6 +1,6 @@
 const maxPP = 4000;
 
-const deck = [
+const masterDeck = [
   { type: "university", name: "東京大学", power: 72.5 },
   { type: "university", name: "京都大学", power: 70 },
   { type: "university", name: "一橋大学", power: 67.5 },
@@ -40,6 +40,9 @@ const deck = [
 let playerPP = maxPP;
 let cpuPP = maxPP;
 
+let playerDeck = [];
+let cpuDeck = [];
+
 let playerHand = [];
 let cpuHand = [];
 
@@ -47,6 +50,7 @@ let playerEvent = null;
 let cpuEvent = null;
 
 let gameOver = false;
+let soundOn = true;
 
 const playerPPText = document.getElementById("playerPP");
 const cpuPPText = document.getElementById("cpuPP");
@@ -60,6 +64,9 @@ const playerPower = document.getElementById("playerPower");
 const cpuName = document.getElementById("cpuName");
 const cpuPower = document.getElementById("cpuPower");
 
+const playerField = document.getElementById("playerField");
+const cpuField = document.getElementById("cpuField");
+
 const result = document.getElementById("result");
 const handArea = document.getElementById("hand");
 const resetBtn = document.getElementById("resetBtn");
@@ -68,30 +75,43 @@ const damageContainer = document.getElementById("damageContainer");
 
 const playerLine = document.getElementById("playerLine");
 const cpuLine = document.getElementById("cpuLine");
+const soundBtn = document.getElementById("soundBtn");
 
 resetBtn.addEventListener("click", startGame);
+
+soundBtn.addEventListener("click", () => {
+  soundOn = !soundOn;
+  soundBtn.textContent = soundOn ? "効果音：ON" : "効果音：OFF";
+});
 
 startGame();
 
 function startGame() {
   playerPP = maxPP;
   cpuPP = maxPP;
-  gameOver = false;
+
+  playerDeck = shuffleDeck([...masterDeck]);
+  cpuDeck = shuffleDeck([...masterDeck]);
 
   playerHand = [];
   cpuHand = [];
+
   playerEvent = null;
   cpuEvent = null;
+  gameOver = false;
 
   for (let i = 0; i < 5; i++) {
-    playerHand.push(randomCard());
-    cpuHand.push(randomCard());
+    playerHand.push(drawCard(playerDeck));
+    cpuHand.push(drawCard(cpuDeck));
   }
 
   playerName.textContent = "？？？";
   playerPower.textContent = "-";
   cpuName.textContent = "？？？";
   cpuPower.textContent = "-";
+
+  playerField.className = "field-card";
+  cpuField.className = "field-card";
 
   playerLine.textContent = "いくぞ、学歴バトル開始！";
   cpuLine.textContent = "これは読み合いやな。";
@@ -101,8 +121,20 @@ function startGame() {
   showHand();
 }
 
-function randomCard() {
-  return deck[Math.floor(Math.random() * deck.length)];
+function shuffleDeck(cards) {
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  return cards;
+}
+
+function drawCard(deckArray) {
+  if (deckArray.length === 0) {
+    deckArray.push(...shuffleDeck([...masterDeck]));
+  }
+
+  return deckArray.pop();
 }
 
 function getLabel(power) {
@@ -140,23 +172,24 @@ function showHand() {
   });
 }
 
-function playCard(i) {
+function playCard(index) {
   if (gameOver) return;
 
-  const card = playerHand[i];
+  const card = playerHand[index];
 
   if (card.type === "event") {
     playerEvent = card;
-    playerHand.splice(i, 1);
-    playerHand.push(randomCard());
+    playerHand.splice(index, 1);
+    playerHand.push(drawCard(playerDeck));
 
     result.textContent = `イベント「${card.name}」をセット！ 次の大学カードで発動！`;
     playerLine.textContent = `ここで「${card.name}」や！`;
+    playSound("event");
     showHand();
     return;
   }
 
-  playTurn(i);
+  playTurn(index);
 }
 
 function playTurn(playerIndex) {
@@ -177,17 +210,17 @@ function playTurn(playerIndex) {
   let playerPowerValue = playerCard.power;
   let cpuPowerValue = cpuCard.power;
 
-  let messages = [];
+  const messages = [];
 
-  const playerEventResult = applyEvent("player", playerEvent, playerCard, cpuCard);
-  playerPowerValue += playerEventResult.playerBonus;
-  cpuPowerValue += playerEventResult.cpuBonus;
-  messages.push(playerEventResult.message);
+  const playerEventResult = applyEvent("player", playerEvent, playerCard);
+  playerPowerValue += playerEventResult.ownBonus;
+  cpuPowerValue += playerEventResult.enemyBonus;
+  if (playerEventResult.message) messages.push(playerEventResult.message);
 
-  const cpuEventResult = applyEvent("cpu", cpuEvent, cpuCard, playerCard);
-  cpuPowerValue += cpuEventResult.playerBonus;
-  playerPowerValue += cpuEventResult.cpuBonus;
-  messages.push(cpuEventResult.message);
+  const cpuEventResult = applyEvent("cpu", cpuEvent, cpuCard);
+  cpuPowerValue += cpuEventResult.ownBonus;
+  playerPowerValue += cpuEventResult.enemyBonus;
+  if (cpuEventResult.message) messages.push(cpuEventResult.message);
 
   playerEvent = null;
   cpuEvent = null;
@@ -195,17 +228,11 @@ function playTurn(playerIndex) {
   playerHand.splice(playerIndex, 1);
   cpuHand.splice(cpuIndex, 1);
 
-  playerHand.push(randomCard());
-  cpuHand.push(randomCard());
+  playerHand.push(drawCard(playerDeck));
+  cpuHand.push(drawCard(cpuDeck));
 
-  playerName.textContent = playerCard.name;
-  playerPower.textContent = getLabel(playerCard.power);
-
-  cpuName.textContent = cpuCard.name;
-  cpuPower.textContent = getLabel(cpuCard.power);
-
-  playerName.parentElement.className = `field-card card-${getLabel(playerCard.power)}`;
-  cpuName.parentElement.className = `field-card card-${getLabel(cpuCard.power)}`;
+  showFieldCard("player", playerCard);
+  showFieldCard("cpu", cpuCard);
 
   if (playerPowerValue > cpuPowerValue) {
     const damage = Math.floor((playerPowerValue - cpuPowerValue) * 100);
@@ -213,7 +240,8 @@ function playTurn(playerIndex) {
 
     const rect = cpuName.getBoundingClientRect();
     showDamage(rect.left + 30, rect.top, damage);
-    shakeElement(document.querySelectorAll(".field-card")[1]);
+    shakeElement(cpuField);
+    playSound("damage");
 
     result.textContent = `${messages.join(" ")} あなたの勝ち！ CPUに${damage}ダメージ！`;
     playerLine.textContent = "学歴マウント成功！";
@@ -225,7 +253,8 @@ function playTurn(playerIndex) {
 
     const rect = playerName.getBoundingClientRect();
     showDamage(rect.left + 30, rect.top, damage);
-    shakeElement(document.querySelectorAll(".field-card")[0]);
+    shakeElement(playerField);
+    playSound("damage");
 
     result.textContent = `${messages.join(" ")} CPUの勝ち！ あなたに${damage}ダメージ！`;
     playerLine.textContent = "くっ、まだ終わってない！";
@@ -235,6 +264,7 @@ function playTurn(playerIndex) {
     result.textContent = `${messages.join(" ")} 引き分け！`;
     playerLine.textContent = "互角か……";
     cpuLine.textContent = "ええ勝負や。";
+    playSound("event");
   }
 
   updatePP();
@@ -242,26 +272,48 @@ function playTurn(playerIndex) {
   showHand();
 }
 
-function applyEvent(owner, eventCard, ownUniversity, enemyUniversity) {
+function showFieldCard(side, card) {
+  const label = getLabel(card.power);
+
+  if (side === "player") {
+    playerName.textContent = card.name;
+    playerPower.textContent = label;
+    playerField.className = `field-card card-${label}`;
+  } else {
+    cpuName.textContent = card.name;
+    cpuPower.textContent = label;
+    cpuField.className = `field-card card-${label}`;
+  }
+}
+
+function applyEvent(owner, eventCard, ownUniversity) {
   const noEffect = {
-    playerBonus: 0,
-    cpuBonus: 0,
+    ownBonus: 0,
+    enemyBonus: 0,
     message: ""
   };
 
   if (!eventCard) return noEffect;
 
+  playSound("event");
+
   const isF = getLabel(ownUniversity.power) === "Fラン";
-  let message = "";
+  const name = owner === "player" ? "あなた" : "CPU";
 
   if (eventCard.effect === "rise") {
     if (isF) {
-      message = `${ownerName(owner)}の「成り上がり社長」発動！ 攻撃力+25！`;
-      return { playerBonus: 25, cpuBonus: 0, message };
-    } else {
-      message = `${ownerName(owner)}の「成り上がり社長」発動！ 攻撃力+5！`;
-      return { playerBonus: 5, cpuBonus: 0, message };
+      return {
+        ownBonus: 25,
+        enemyBonus: 0,
+        message: `${name}の「成り上がり社長」発動！ Fランから攻撃力+25！`
+      };
     }
+
+    return {
+      ownBonus: 5,
+      enemyBonus: 0,
+      message: `${name}の「成り上がり社長」発動！ 攻撃力+5！`
+    };
   }
 
   if (eventCard.effect === "flame") {
@@ -272,31 +324,40 @@ function applyEvent(owner, eventCard, ownUniversity, enemyUniversity) {
         cpuPP -= 300;
       }
 
-      message = `${ownerName(owner)}の「炎上覚悟の逆転劇」！ 相手攻撃力-20、反動300！`;
-      return { playerBonus: 0, cpuBonus: -20, message };
-    } else {
-      if (owner === "player") {
-        playerPP -= 300;
-      } else {
-        cpuPP -= 300;
-      }
-
-      message = `${ownerName(owner)}の「炎上覚悟の逆転劇」は不発！ 反動300！`;
-      return { playerBonus: 0, cpuBonus: 0, message };
+      return {
+        ownBonus: 0,
+        enemyBonus: -20,
+        message: `${name}の「炎上覚悟の逆転劇」！ 相手攻撃力-20、反動300！`
+      };
     }
+
+    if (owner === "player") {
+      playerPP -= 300;
+    } else {
+      cpuPP -= 300;
+    }
+
+    return {
+      ownBonus: 0,
+      enemyBonus: 0,
+      message: `${name}の「炎上覚悟の逆転劇」は不発！ 反動300！`
+    };
   }
 
   if (eventCard.effect === "heal") {
+    const heal = isF ? 800 : 200;
+
     if (owner === "player") {
-      playerPP += isF ? 800 : 200;
-      playerPP = Math.min(playerPP, maxPP);
+      playerPP = Math.min(maxPP, playerPP + heal);
     } else {
-      cpuPP += isF ? 800 : 200;
-      cpuPP = Math.min(cpuPP, maxPP);
+      cpuPP = Math.min(maxPP, cpuPP + heal);
     }
 
-    message = `${ownerName(owner)}の「登録者100万人」！ PP回復！`;
-    return { playerBonus: 0, cpuBonus: 0, message };
+    return {
+      ownBonus: 0,
+      enemyBonus: 0,
+      message: `${name}の「登録者100万人」！ PPを${heal}回復！`
+    };
   }
 
   if (eventCard.effect === "buzz") {
@@ -309,45 +370,76 @@ function applyEvent(owner, eventCard, ownUniversity, enemyUniversity) {
         playerPP -= 1000;
       }
 
-      message = `${ownerName(owner)}の「一発逆転のバズ」成功！ 1000ダメージ！`;
-    } else {
-      message = `${ownerName(owner)}の「一発逆転のバズ」失敗！`;
+      return {
+        ownBonus: 0,
+        enemyBonus: 0,
+        message: `${name}の「一発逆転のバズ」成功！ 1000ダメージ！`
+      };
     }
 
-    return { playerBonus: 0, cpuBonus: 0, message };
+    return {
+      ownBonus: 0,
+      enemyBonus: 0,
+      message: `${name}の「一発逆転のバズ」失敗！`
+    };
   }
 
   return noEffect;
 }
 
-function ownerName(owner) {
-  return owner === "player" ? "あなた" : "CPU";
-}
-
 function cpuUseEvent() {
-  const eventIndex = cpuHand.findIndex(card => card.type === "event");
+  if (cpuEvent) return;
 
-  if (eventIndex === -1) return;
+  const eventIndexes = [];
+
+  for (let i = 0; i < cpuHand.length; i++) {
+    if (cpuHand[i].type === "event") {
+      eventIndexes.push(i);
+    }
+  }
+
+  if (eventIndexes.length === 0) return;
 
   const level = cpuLevelSelect.value;
 
   if (level === "easy") {
-    if (Math.random() < 0.25) setCpuEvent(eventIndex);
+    if (Math.random() < 0.25) {
+      setCpuEvent(eventIndexes[0]);
+    }
+    return;
   }
 
   if (level === "normal") {
-    if (Math.random() < 0.5) setCpuEvent(eventIndex);
+    if (Math.random() < 0.5) {
+      setCpuEvent(eventIndexes[0]);
+    }
+    return;
   }
 
-  if (level === "hard") {
-    setCpuEvent(eventIndex);
-  }
+  const bestEventIndex = chooseBestCpuEvent(eventIndexes);
+  setCpuEvent(bestEventIndex);
+}
+
+function chooseBestCpuEvent(eventIndexes) {
+  const hpRatio = cpuPP / maxPP;
+
+  const healIndex = eventIndexes.find(i => cpuHand[i].effect === "heal");
+  if (hpRatio <= 0.5 && healIndex !== undefined) return healIndex;
+
+  const riseIndex = eventIndexes.find(i => cpuHand[i].effect === "rise");
+  if (riseIndex !== undefined) return riseIndex;
+
+  const flameIndex = eventIndexes.find(i => cpuHand[i].effect === "flame");
+  if (flameIndex !== undefined) return flameIndex;
+
+  return eventIndexes[0];
 }
 
 function setCpuEvent(index) {
   cpuEvent = cpuHand[index];
   cpuHand.splice(index, 1);
-  cpuHand.push(randomCard());
+  cpuHand.push(drawCard(cpuDeck));
+
   cpuLine.textContent = `CPUがイベント「${cpuEvent.name}」をセット！`;
 }
 
@@ -375,6 +467,7 @@ function chooseCpuUniversityCard(playerCard) {
     if (Math.random() < 0.5) {
       return smartCpuIndex(universityIndexes, playerCard);
     }
+
     return universityIndexes[Math.floor(Math.random() * universityIndexes.length)];
   }
 
@@ -386,21 +479,29 @@ function smartCpuIndex(indexes, playerCard) {
 
   if (winning.length > 0) {
     let best = winning[0];
+
     for (let i of winning) {
-      if (cpuHand[i].power < cpuHand[best].power) best = i;
+      if (cpuHand[i].power < cpuHand[best].power) {
+        best = i;
+      }
     }
+
     return best;
   }
 
   let weakest = indexes[0];
+
   for (let i of indexes) {
-    if (cpuHand[i].power < cpuHand[weakest].power) weakest = i;
+    if (cpuHand[i].power < cpuHand[weakest].power) {
+      weakest = i;
+    }
   }
+
   return weakest;
 }
 
 function randomUniversityCard() {
-  const universities = deck.filter(card => card.type === "university");
+  const universities = masterDeck.filter(card => card.type === "university");
   return universities[Math.floor(Math.random() * universities.length)];
 }
 
@@ -456,16 +557,54 @@ function shakeElement(element) {
   }, 350);
 }
 
+function playSound(type) {
+  if (!soundOn) return;
+
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = new AudioContextClass();
+
+  const oscillator = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  oscillator.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  if (type === "damage") {
+    oscillator.frequency.value = 120;
+    gain.gain.value = 0.16;
+  } else if (type === "win") {
+    oscillator.frequency.value = 660;
+    gain.gain.value = 0.13;
+  } else if (type === "event") {
+    oscillator.frequency.value = 440;
+    gain.gain.value = 0.11;
+  } else {
+    oscillator.frequency.value = 220;
+    gain.gain.value = 0.1;
+  }
+
+  oscillator.start();
+
+  gain.gain.exponentialRampToValueAtTime(
+    0.001,
+    audioCtx.currentTime + 0.25
+  );
+
+  oscillator.stop(audioCtx.currentTime + 0.25);
+}
+
 function checkGameOver() {
   if (playerPP <= 0) {
     result.textContent = "あなたの敗北……CPUの勝ち！";
     playerLine.textContent = "まだ次がある……！";
     cpuLine.textContent = "今回はこっちの勝ちやな。";
+    playSound("win");
     gameOver = true;
   } else if (cpuPP <= 0) {
     result.textContent = "あなたの勝利！";
     playerLine.textContent = "完全勝利！";
     cpuLine.textContent = "やられたわ……";
+    playSound("win");
     gameOver = true;
   }
 }
