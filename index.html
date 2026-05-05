@@ -11,6 +11,18 @@
 
 <button id="soundBtn">効果音：ON</button>
 
+<div id="modeSelect">
+  <h2>モードを選択</h2>
+  <button onclick="startBattleMode()">カードバトル</button>
+  <button onclick="startStoryMode()">ストーリー</button>
+</div>
+
+<div id="routeSelect" style="display:none;">
+  <h2>ルートを選べ</h2>
+  <button onclick="selectRoute('stable')">安定ルート</button>
+  <button onclick="selectRoute('reverse')">逆転ルート</button>
+</div>
+
 <div class="pp-area">
   <div>
     <h2>あなたPP：<span id="playerPP">4000</span></h2>
@@ -43,16 +55,18 @@
     <h3>あなたの場</h3>
     <p id="playerName">？？？</p>
     <p id="playerPower">-</p>
+    <p id="playerSkill">スキル：-</p>
   </div>
 
   <div class="field-card" id="cpuField">
     <h3>CPUの場</h3>
     <p id="cpuName">？？？</p>
     <p id="cpuPower">-</p>
+    <p id="cpuSkill">スキル：-</p>
   </div>
 </div>
 
-<h2 id="result">手札からカードを選べ！</h2>
+<h2 id="result">モードを選んでください</h2>
 
 <h2>あなたの手札</h2>
 <div id="hand"></div>
@@ -63,7 +77,7 @@
   <img src="fumin.png" class="wipe-img" alt="フーミン">
   <div>
     <strong>フーミン</strong>
-    <p id="playerLine">いくぞ、学歴バトル開始！</p>
+    <p id="playerLine">まずはモード選択や！</p>
   </div>
 </div>
 
@@ -71,7 +85,7 @@
   <img src="biyama.png" class="wipe-img" alt="ビーヤマ">
   <div>
     <strong>ビーヤマ</strong>
-    <p id="cpuLine">これは読み合いやな。</p>
+    <p id="cpuLine">戦略が大事やで。</p>
   </div>
 </div>
 
