@@ -2,7 +2,7 @@ body {
   text-align: center;
   font-family: sans-serif;
   background: #eeeeee;
-  padding-bottom: 170px;
+  padding-bottom: 120px;
 }
 
 h1 {
@@ -147,54 +147,46 @@ button:hover {
 
 .wipe {
   position: fixed;
-  bottom: 15px;
-  width: 285px;
-  min-height: 95px;
-  background: rgba(255,255,255,0.95);
-  border: 3px solid #333;
-  border-radius: 18px;
+  bottom: 12px;
+  width: 220px;
+  min-height: 72px;
+  background: rgba(255,255,255,0.92);
+  border: 2px solid #333;
+  border-radius: 14px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  gap: 8px;
+  padding: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
   z-index: 5;
 }
 
 .player-wipe {
-  left: 15px;
+  left: 12px;
 }
 
 .cpu-wipe {
-  right: 15px;
+  right: 12px;
 }
 
 .wipe-img {
-  width: 90px;
-  height: 90px;
-  border-radius: 14px;
-  border: 3px solid #333;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 2px solid #333;
   object-fit: cover;
   object-position: center;
   background: white;
 }
 
-.wipe {
-  position: fixed;
-  bottom: 15px;
-  width: 330px;
-  min-height: 115px;
-  background: rgba(255,255,255,0.95);
-  border: 3px solid #333;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  z-index: 5;
+.wipe p {
+  margin: 4px 0 0;
+  font-size: 12px;
 }
 
+.wipe strong {
+  font-size: 14px;
+}
 #damageContainer {
   position: fixed;
   top: 0;
