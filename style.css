@@ -2,7 +2,7 @@ body {
   text-align: center;
   font-family: sans-serif;
   background: #eeeeee;
-  padding-bottom: 120px;
+  padding-bottom: 130px;
 }
 
 h1 {
@@ -16,6 +16,11 @@ h1 {
   z-index: 20;
   background: #111;
   color: white;
+}
+
+#modeSelect,
+#routeSelect {
+  margin: 20px;
 }
 
 .pp-area {
@@ -37,7 +42,6 @@ h1 {
   height: 100%;
   width: 100%;
   transition: width 0.4s, background 0.4s;
-  clip-path: polygon(0 0, 95% 0, 100% 50%, 95% 100%, 0 100%);
 }
 
 .hp-text {
@@ -73,8 +77,8 @@ h1 {
 }
 
 .field-card {
-  width: 230px;
-  min-height: 155px;
+  width: 240px;
+  min-height: 180px;
 }
 
 #hand {
@@ -86,8 +90,8 @@ h1 {
 }
 
 .hand-card {
-  width: 165px;
-  min-height: 110px;
+  width: 170px;
+  min-height: 130px;
   cursor: pointer;
 }
 
@@ -130,6 +134,16 @@ h1 {
   border-color: #ad1457;
 }
 
+.skill-glow {
+  animation: glow 0.8s;
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 0 rgba(255,255,0,0); }
+  50% { box-shadow: 0 0 25px 10px rgba(255,255,0,0.9); }
+  100% { box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+}
+
 button {
   padding: 12px 24px;
   font-size: 18px;
@@ -146,10 +160,13 @@ button:hover {
 }
 
 .wipe {
-  position: fixed;
-  bottom: 12px;
-  width: 220px;
-  min-height: 72px;
+  position: fixed !important;
+  bottom: 10px !important;
+  width: 210px !important;
+  height: 76px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  z-index: 3 !important;
   background: rgba(255,255,255,0.92);
   border: 2px solid #333;
   border-radius: 14px;
@@ -157,36 +174,38 @@ button:hover {
   align-items: center;
   gap: 8px;
   padding: 8px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-  z-index: 5;
 }
 
 .player-wipe {
-  left: 12px;
+  left: 10px !important;
 }
 
 .cpu-wipe {
-  right: 12px;
+  right: 10px !important;
 }
 
 .wipe-img {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  border: 2px solid #333;
-  object-fit: cover;
-  object-position: center;
-  background: white;
+  width: 56px !important;
+  height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+  min-width: 56px !important;
+  min-height: 56px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  flex-shrink: 0 !important;
 }
 
 .wipe p {
-  margin: 4px 0 0;
-  font-size: 12px;
+  font-size: 11px !important;
+  margin: 2px 0 0 !important;
 }
 
 .wipe strong {
-  font-size: 14px;
+  font-size: 13px !important;
 }
+
 #damageContainer {
   position: fixed;
   top: 0;
