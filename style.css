@@ -1,7 +1,21 @@
 body {
   text-align: center;
   font-family: sans-serif;
-  background: #eee;
+  background: #eeeeee;
+}
+
+h1 {
+  margin-top: 25px;
+}
+
+.pp-area {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.level-area {
+  margin: 20px;
 }
 
 .battle {
@@ -11,16 +25,50 @@ body {
   margin: 30px;
 }
 
-.card {
-  width: 200px;
-  padding: 20px;
+.field-card,
+.hand-card {
   background: white;
   border: 3px solid #333;
-  border-radius: 10px;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.field-card {
+  width: 220px;
+  min-height: 140px;
+}
+
+#hand {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 20px;
+}
+
+.hand-card {
+  width: 150px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.hand-card:hover {
+  transform: translateY(-8px);
+  background: #fff7b3;
 }
 
 button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 18px;
   margin: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #555;
 }
