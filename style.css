@@ -9,6 +9,15 @@ h1 {
   margin-top: 25px;
 }
 
+#soundBtn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  background: #111;
+  color: white;
+}
+
 .pp-area {
   display: flex;
   justify-content: center;
@@ -64,8 +73,8 @@ h1 {
 }
 
 .field-card {
-  width: 220px;
-  min-height: 150px;
+  width: 230px;
+  min-height: 155px;
 }
 
 #hand {
@@ -77,7 +86,8 @@ h1 {
 }
 
 .hand-card {
-  width: 160px;
+  width: 165px;
+  min-height: 110px;
   cursor: pointer;
 }
 
@@ -85,7 +95,6 @@ h1 {
   transform: translateY(-8px);
 }
 
-/* ラベル別カード雰囲気 */
 .card-旧帝大 {
   background: linear-gradient(135deg, #fff8dc, #ffd700);
   border-color: #b8860b;
@@ -139,7 +148,7 @@ button:hover {
 .wipe {
   position: fixed;
   bottom: 15px;
-  width: 270px;
+  width: 285px;
   min-height: 95px;
   background: rgba(255,255,255,0.95);
   border: 3px solid #333;
@@ -160,22 +169,13 @@ button:hover {
   right: 15px;
 }
 
-.face {
-  width: 58px;
-  height: 58px;
+.wipe-img {
+  width: 66px;
+  height: 66px;
   border-radius: 50%;
-  color: white;
-  font-size: 32px;
-  font-weight: bold;
-  line-height: 58px;
-}
-
-.red-face {
-  background: #d50000;
-}
-
-.blue-face {
-  background: #1565c0;
+  border: 3px solid #333;
+  object-fit: cover;
+  background: white;
 }
 
 .wipe p {
@@ -194,7 +194,7 @@ button:hover {
 
 .damage {
   position: absolute;
-  font-size: 32px;
+  font-size: 34px;
   font-weight: bold;
   color: red;
   text-shadow: 2px 2px 4px black;
