@@ -30,20 +30,24 @@ const universities = [
   { name: "明星大学", power: 35 }
 ];
 
-let playerPP = 4000;
-let cpuPP = 4000;
+const maxPP = 4000;
 
+let playerPP = maxPP;
+let cpuPP = maxPP;
 let playerHand = [];
 let cpuHand = [];
-
 let gameOver = false;
 
 const playerPPText = document.getElementById("playerPP");
 const cpuPPText = document.getElementById("cpuPP");
+const playerBar = document.getElementById("playerBar");
+const cpuBar = document.getElementById("cpuBar");
+
 const playerName = document.getElementById("playerName");
 const playerPower = document.getElementById("playerPower");
 const cpuName = document.getElementById("cpuName");
 const cpuPower = document.getElementById("cpuPower");
+
 const result = document.getElementById("result");
 const handArea = document.getElementById("hand");
 const resetBtn = document.getElementById("resetBtn");
@@ -54,8 +58,8 @@ resetBtn.addEventListener("click", startGame);
 startGame();
 
 function startGame() {
-  playerPP = 4000;
-  cpuPP = 4000;
+  playerPP = maxPP;
+  cpuPP = maxPP;
   gameOver = false;
 
   playerHand = [];
@@ -111,7 +115,7 @@ function playTurn(playerIndex) {
   if (gameOver) return;
 
   const playerCard = playerHand[playerIndex];
-  const cpuIndex = chooseCpuCard();
+  const cpuIndex = chooseCpuCard(playerCard);
   const cpuCard = cpuHand[cpuIndex];
 
   playerHand.splice(playerIndex, 1);
@@ -129,11 +133,11 @@ function playTurn(playerIndex) {
   if (playerCard.power > cpuCard.power) {
     const damage = Math.floor((playerCard.power - cpuCard.power) * 100);
     cpuPP -= damage;
-    result.textContent = `あなたの勝ち！ ${damage}ダメージ`;
+    result.textContent = `あなたの勝ち！ CPUに${damage}ダメージ`;
   } else if (playerCard.power < cpuCard.power) {
     const damage = Math.floor((cpuCard.power - playerCard.power) * 100);
     playerPP -= damage;
-    result.textContent = `CPUの勝ち！ ${damage}ダメージ`;
+    result.textContent = `CPUの勝ち！ あなたに${damage}ダメージ`;
   } else {
     result.textContent = "引き分け！";
   }
@@ -143,43 +147,78 @@ function playTurn(playerIndex) {
   showHand();
 }
 
-function chooseCpuCard() {
+function chooseCpuCard(playerCard) {
   const level = cpuLevelSelect.value;
 
   if (level === "easy") {
-    return Math.floor(Math.random() * cpuHand.length);
+    return randomCpuIndex();
   }
 
   if (level === "normal") {
     if (Math.random() < 0.5) {
-      return strongestIndex();
+      return saveStrongCardAI(playerCard);
     }
-    return Math.floor(Math.random() * cpuHand.length);
+    return randomCpuIndex();
   }
 
   if (level === "hard") {
-    return strongestIndex();
+    return saveStrongCardAI(playerCard);
   }
 }
 
-function strongestIndex() {
-  let best = 0;
-  for (let i = 1; i < cpuHand.length; i++) {
-    if (cpuHand[i].power > cpuHand[best].power) {
-      best = i;
+// 強カード温存AI
+function saveStrongCardAI(playerCard) {
+  let winningIndexes = [];
+
+  for (let i = 0; i < cpuHand.length; i++) {
+    if (cpuHand[i].power > playerCard.power) {
+      winningIndexes.push(i);
     }
   }
-  return best;
+
+  // 勝てるカードがあるなら「ギリギリ勝てる一番弱いカード」を出す
+  if (winningIndexes.length > 0) {
+    let bestIndex = winningIndexes[0];
+
+    for (let index of winningIndexes) {
+      if (cpuHand[index].power < cpuHand[bestIndex].power) {
+        bestIndex = index;
+      }
+    }
+
+    return bestIndex;
+  }
+
+  // 勝てないなら一番弱いカードを捨てる
+  let weakestIndex = 0;
+
+  for (let i = 1; i < cpuHand.length; i++) {
+    if (cpuHand[i].power < cpuHand[weakestIndex].power) {
+      weakestIndex = i;
+    }
+  }
+
+  return weakestIndex;
+}
+
+function randomCpuIndex() {
+  return Math.floor(Math.random() * cpuHand.length);
 }
 
 function updatePP() {
-  playerPPText.textContent = Math.max(0, playerPP);
-  cpuPPText.textContent = Math.max(0, cpuPP);
+  playerPP = Math.max(0, playerPP);
+  cpuPP = Math.max(0, cpuPP);
+
+  playerPPText.textContent = playerPP;
+  cpuPPText.textContent = cpuPP;
+
+  playerBar.style.width = `${(playerPP / maxPP) * 100}%`;
+  cpuBar.style.width = `${(cpuPP / maxPP) * 100}%`;
 }
 
 function checkGameOver() {
   if (playerPP <= 0) {
-    result.textContent = "あなたの敗北…";
+    result.textContent = "あなたの敗北…CPUの勝ち！";
     gameOver = true;
   } else if (cpuPP <= 0) {
     result.textContent = "あなたの勝利！";
