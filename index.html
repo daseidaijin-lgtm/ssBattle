@@ -9,6 +9,8 @@
 
 <h1>学歴マウントバトル</h1>
 
+<button id="soundBtn">効果音：ON</button>
+
 <div class="pp-area">
   <div>
     <h2>あなたPP：<span id="playerPP">4000</span></h2>
@@ -28,7 +30,6 @@
 </div>
 
 <div class="level-area">
-  <label>CPUタイプ：</label>
   <select id="cpuLevel">
     <option value="easy">Fラン</option>
     <option value="normal">私文</option>
@@ -38,13 +39,13 @@
 
 <div class="battle">
   <div class="field-card">
-    <h3>あなたの場</h3>
+    <h3>あなた</h3>
     <p id="playerName">？？？</p>
     <p id="playerPower">-</p>
   </div>
 
   <div class="field-card">
-    <h3>CPUの場</h3>
+    <h3>CPU</h3>
     <p id="cpuName">？？？</p>
     <p id="cpuPower">-</p>
   </div>
@@ -52,24 +53,24 @@
 
 <h2 id="result">手札からカードを選べ！</h2>
 
-<h2>あなたの手札</h2>
 <div id="hand"></div>
 
 <button id="resetBtn">リセット</button>
 
+<!-- ワイプ -->
 <div class="wipe player-wipe">
-  <div class="face red-face">フ</div>
+  <img src="fumin.png" class="wipe-img">
   <div>
-    <strong>フーミン風</strong>
-    <p id="playerLine">いくぞ、学歴バトル開始！</p>
+    <strong>フーミン</strong>
+    <p id="playerLine">いくぞ！</p>
   </div>
 </div>
 
 <div class="wipe cpu-wipe">
-  <div class="face blue-face">ビ</div>
+  <img src="biyama.png" class="wipe-img">
   <div>
-    <strong>ビーヤマ風</strong>
-    <p id="cpuLine">これは読み合いやな。</p>
+    <strong>ビーヤマ</strong>
+    <p id="cpuLine">冷静にいこう。</p>
   </div>
 </div>
 
